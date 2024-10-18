@@ -45,13 +45,6 @@ namespace Loupedeck.SketchPlugin
             await this._commandWriter.WriteAsync(msg);
         }
 
-        public async void SendDraw()
-        {
-            var msg = JsonSerializer.Serialize(new CommandMsg { Cmd = "draw" });
-            PluginLog.Info($"Sending draw command: {msg}");
-            await this._commandWriter.WriteAsync(msg);
-        }
-
         public async void SendMoveCursor(Int32 x, Int32 y)
         {
             var cmd = JsonSerializer.Serialize(new CommandMsg { Cmd = "move", X = x, Y = y });

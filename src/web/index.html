@@ -3,17 +3,28 @@
 <head>
     <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
     <script>
+        function addCircle(stage, x, y) {
+            var circle = new createjs.Shape();
+            circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
+            circle.x = x;
+            circle.y = y;
+            stage.addChild(circle);
+            stage.update();
+        }
+
         function init() {
             const socket = new WebSocket("ws://localhost:8080");
             socket.onopen = function () {
                 console.log("Connected to Sketch plugin");
             };
 
+            var lastPosition = { x: 100, y: 100 };
+
             var stage = new createjs.Stage("demoCanvas");
             var circle = new createjs.Shape();
             circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
-            circle.x = 100;
-            circle.y = 100;
+            circle.x = lastPosition.x;
+            circle.y = lastPosition.y;
             stage.addChild(circle);
             stage.update();
 
@@ -21,13 +32,26 @@
                 var msg = JSON.parse(event.data);
                 if (msg.Cmd === "move") {
                     console.log("Moving circle");
-                    circle.x += msg.X;
-                    circle.y += msg.Y;
+                    lastPosition.x += msg.X;
+                    lastPosition.y += msg.Y;
+
+                    var circle = new createjs.Shape();
+                    circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
+                    circle.x = lastPosition.x;
+                    circle.y = lastPosition.y;
+                    stage.addChild(circle);
                     stage.update();
                 } else if (msg.Cmd === "reset") {
-                    console.log("Resetting circle");
-                    circle.x = 100;
-                    circle.y = 100;
+                    console.log("Resetting canvas");
+                    stage.clear();
+                    lastPosition.x = 100;
+                    lastPosition.y = 100;
+
+                    var circle = new createjs.Shape();
+                    circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
+                    circle.x = lastPosition.x;
+                    circle.y = lastPosition.y;
+                    stage.addChild(circle);
                     stage.update();
                 }
                 console.log(event.data);
