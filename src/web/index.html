@@ -21,12 +21,7 @@
             var lastPosition = { x: 100, y: 100 };
 
             var stage = new createjs.Stage("demoCanvas");
-            var circle = new createjs.Shape();
-            circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
-            circle.x = lastPosition.x;
-            circle.y = lastPosition.y;
-            stage.addChild(circle);
-            stage.update();
+            addCircle(stage, lastPosition.x, lastPosition.y);
 
             socket.onmessage = function (event) {
                 var msg = JSON.parse(event.data);
@@ -35,24 +30,15 @@
                     lastPosition.x += msg.X;
                     lastPosition.y += msg.Y;
 
-                    var circle = new createjs.Shape();
-                    circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
-                    circle.x = lastPosition.x;
-                    circle.y = lastPosition.y;
-                    stage.addChild(circle);
-                    stage.update();
+                    addCircle(stage, lastPosition.x, lastPosition.y);
                 } else if (msg.Cmd === "reset") {
                     console.log("Resetting canvas");
-                    stage.clear();
+                    stage.removeAllChildren();
+                    stage.update();
                     lastPosition.x = 100;
                     lastPosition.y = 100;
 
-                    var circle = new createjs.Shape();
-                    circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
-                    circle.x = lastPosition.x;
-                    circle.y = lastPosition.y;
-                    stage.addChild(circle);
-                    stage.update();
+                    addCircle(stage, lastPosition.x, lastPosition.y);
                 }
                 console.log(event.data);
             };
