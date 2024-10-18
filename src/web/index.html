@@ -1,29 +1,43 @@
 <html>
-  <head>
+
+<head>
     <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
     <script>
-      function init() {
-        const socket = new WebSocket("ws://localhost:8080");
-        socket.onopen = function () {
-            console.log("Connected to Sketch plugin");
-            socket.send("Hello, Server!");
-        };
+        function init() {
+            const socket = new WebSocket("ws://localhost:8080");
+            socket.onopen = function () {
+                console.log("Connected to Sketch plugin");
+            };
 
-        socket.onmessage = function (event) {
-          console.log(event.data);
-        };
+            var stage = new createjs.Stage("demoCanvas");
+            var circle = new createjs.Shape();
+            circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 20);
+            circle.x = 100;
+            circle.y = 100;
+            stage.addChild(circle);
+            stage.update();
 
-        var stage = new createjs.Stage("demoCanvas");
-        var circle = new createjs.Shape();
-        circle.graphics.beginFill("DeepSkyBlue").drawCircle(0, 0, 50);
-        circle.x = 100;
-        circle.y = 100;
-        stage.addChild(circle);
-        stage.update();
-      }
+            socket.onmessage = function (event) {
+                var msg = JSON.parse(event.data);
+                if (msg.Cmd === "move") {
+                    console.log("Moving circle");
+                    circle.x += msg.X;
+                    circle.y += msg.Y;
+                    stage.update();
+                } else if (msg.Cmd === "reset") {
+                    console.log("Resetting circle");
+                    circle.x = 100;
+                    circle.y = 100;
+                    stage.update();
+                }
+                console.log(event.data);
+            };
+        }
     </script>
-  </head>
-  <body onload="init();">
-    <canvas id="demoCanvas" width="500" height="200"></canvas>
-  </body>
+</head>
+
+<body onload="init();">
+    <canvas id="demoCanvas" width="500" height="500"></canvas>
+</body>
+
 </html>
